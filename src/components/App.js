@@ -1,81 +1,78 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 
-const users = [
+const data = [
   {
     id: 1,
-    name: "ABC",
-    email: "abc@gmail.com",
-    password: "123",
+    name: 'ABC',
+    email: 'abc@gmail.com',
+    password: '12',
   },
   {
     id: 2,
-    name: "DEF",
-    email: "def@gmail.com",
-    password: "12345",
+    name: 'DEF',
+    email: 'def@gmail.com',
+    password: '1234',
   },
   {
     id: 3,
-    name: "GHI",
-    email: "ghi@gmail.com",
-    password: "123456",
+    name: 'GHI',
+    email: 'ghi@gmail.com',
+    password: '123456',
   },
 ];
 
 const App = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [userError, setUserError] = useState(""); 
-  const [passwordError, setPasswordError] = useState(""); 
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
 
-  function handleSubmit(e) {
+  const handleLogin = (e) => {
     e.preventDefault();
-
-    setUserError("");
-    setPasswordError("");
-    setIsSubmitting(true);
-
-    setTimeout(() => {
-      const user = users.find((u) => u.email === email);
-
+    try {
+      setError('');
+      const user = data.find((item) => item.email === email);
       if (!user) {
-        const err = { message: "User not found" };
-        console.log(err); 
-        setUserError("User not found");
-        setIsSubmitting(false);
-        return;
+        throw new Error('user-error');
       }
-
       if (user.password !== password) {
-        const err = { message: "Password Incorrect" };
-        console.log(err);
-        setPasswordError("Password Incorrect");
-        setIsSubmitting(false);
-        return;
+        throw new Error('password-error');
       }
-
-      console.log(user);
-      setIsSubmitting(false);
-    }, 3000);
-  }
+      setTimeout(() => {
+        console.log(user);
+      }, 3000);
+    } catch (error) {
+      setError(error.message);
+    }
+  };
 
   return (
     <div>
-      <h2>Login</h2>
-      <form onSubmit={handleSubmit}>
-        <div style={{ marginBottom: "12px" }}>
-          <label htmlFor="input-email">Email</label>
-          <input id="input-email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
-          <div id="user-error" style={{ color: "red", fontSize: "12px", minHeight: "16px" }}>{userError}</div>
-        </div>
-
-        <div style={{ marginBottom: "12px" }}>
-          <label htmlFor="input-password">Password</label>
-          <input id="input-password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
-          <div id="password-error" style={{ color: "red", fontSize: "12px", minHeight: "16px" }}>{passwordError}</div>
-        </div>
-
-        <button id="submit-form-btn" type="submit" disabled={isSubmitting}>{isSubmitting ? "Please wait..." : "Login"}</button>
+      <form onSubmit={handleLogin}>
+        <input
+          id="input-email"
+          type="text"
+          onChange={(e) => {
+            setEmail(e.target.value);
+          }}
+        />
+        {error === 'user-error' ? (
+          <p id="user-error">User not found</p>
+        ) : (
+          <p id="user-error"></p>
+        )}
+        <input
+          id="input-password"
+          type="password"
+          onChange={(e) => {
+            setPassword(e.target.value);
+          }}
+        />
+        {error === 'password-error' ? (
+          <p id="password-error">Password Incorrect</p>
+        ) : (
+          <p id="password-error"></p>
+        )}
+        <button id="submit-form-btn">Login</button>
       </form>
     </div>
   );
